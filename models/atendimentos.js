@@ -1,10 +1,11 @@
-const conexao = require('../infraestrututa/conexao')
+const conexao = require('../infraestrutura/database/conexao')
 const moment = require('moment')
 const { restart } = require('nodemon')
 const { default: axios } = require('axios')
+const repositorio = require('../repositorios/atendimento')
 
 class Atendimento {
-    adiciona(atendimento, res) {
+    adiciona(atendimento) {
 
         
         const nomeValido = atendimento.cliente.lenght >= 5
@@ -20,29 +21,19 @@ class Atendimento {
         const existemErros = erros.lenght   
         
         if(existemErros) {
-            res.status(400).json(erros)
+            return new Promise((resolve, reject) => reject(erros))
         } else {
-            const sql = 'INSERT INTO Atendimentos SET ?';
-            conexao.query(sql, atendimento, (erro, resultados) => {
-                if(erro){
-                    res.status(400).json(erro)
-                } else {
-                    res.status(201).json(atendimento)
-                }
-            })
+            return repositorio.adiciona(atendimento)
+                .then((resultados) => {
+                    const id = resultados.insertId
+                    return { ...atendimento, id}
+                })
         }
 
     }
 
-    lista(res){
-        const sql = 'SELECT * FROM Atendimentos'
-        conexao.query(sql, (erro, resultados) => {
-            if(erro){
-                res.status(400).json(erro)
-            }else{
-                res.status(200).json(resultados)
-            }
-        })
+    lista(){
+        return repositorio.lista()
     }
     buscaPorId(id, res){
         const sql = `SELECT * FROM Atendimentos WHERE id=${id}`

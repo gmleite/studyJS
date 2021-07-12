@@ -1,6 +1,6 @@
 const pets = require('../controllers/pets')
-const conexao = require('../infraestrututa/conexao')
-const uploadarq = require('../arquivos/uploadarq')
+const conexao = require('../infraestrutura/database/conexao')
+const uploadarq = require('../infraestrutura/uploadarq')
 
 
 class Pet{
