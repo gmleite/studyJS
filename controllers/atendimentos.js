@@ -6,6 +6,10 @@ module.exports = app =>{
 
     })
 
+    app.get('/atendimentos/ajuda', (req, res) => {
+        console.log('Get realizado em ajuda')
+    })
+
     app.get('/atendimentos/:id', (req, res)=>{
         const id = parseInt(req.params.id)
         
