@@ -1,6 +1,7 @@
 const conexao = require('../infraestrututa/conexao')
 const moment = require('moment')
 const { restart } = require('nodemon')
+const { default: axios } = require('axios')
 
 class Atendimento {
     adiciona(atendimento, res) {
@@ -45,12 +46,15 @@ class Atendimento {
     }
     buscaPorId(id, res){
         const sql = `SELECT * FROM Atendimentos WHERE id=${id}`
-        conexao.query(sql, (erro, resultados) => {
+        conexao.query(sql, async (erro, resultados) => {
             const atendimento = resultados[0]
+            const cpf = atendimento.cliente
             if(erro){
                 res.status(400).json(erro)
             }else{
-                res.status(201).json(atendimento)
+                const { data } = await axios.get(`http://localhost:8084/${cpf}`)
+                atendimento.cliente = data
+                res.status(200).json(atendimento)
             }
         })
     }
